@@ -14,6 +14,10 @@ api_secret="i3hUtLdolcx5289Atv9oCTWI4ayntw84p8oWOuXDcnXiq9BPklPW9AOjEYqVjVeT"
 client = Client(api_key, api_secret)
 global overall
 overall=0
+global overall1
+overall1=0
+global overall2
+overall2=0
 
 # Function that create the app 
 
@@ -340,10 +344,156 @@ def webhook():
         
           }) 
 
-    
+@app.route('/tl', methods=['POST'])
+def webhook():
+     
+
+     data = json.loads(request.data)
+
+     if data['passphrase'] == "ramp":
+           return jsonify( {
+            "code": "error",
+            "message": "good ramp"
+           }) 
+          
+
+     elif data['passphrase']=="newcode":
+         side = data['side']
+         pr = data['price']
+         pair=data['pair']
+         qt=data['qt'] 
+         qt=int(qt)
+         global overall1
+
     
 
 
+         if side=="LONG":
+            try:
+                ap=client.futures_create_order(symbol=pair, side='BUY',positionSide="BOTH",type='MARKET',quantity=qt,reduceOnly='false')
+                print(ap)
+                result = client.futures_get_order(symbol=pair,orderId=ap['orderId'])
+                
+                pr=float(pr)
+                avgp=float(result['avgPrice'])
+                print(pr)
+                print(avgp)
+                chang=pr - avgp
+                overall1=overall1 + chang
+                print(chang)
+                print(overall1)
+                send_text = 'https://api.telegram.org/bot5064252177:AAGlwwtDi4B7TiwB4LTDyPvtYNeGIKJDlHk/sendMessage?chat_id=998041732&parse_mode=Markdown&text=EXECUTED WITH SIDE ' +result['side'] +" WITH QUANTITY " +result['executedQty']+" WITH PRICE " +result['avgPrice']+" BUT ACTUAL PRICE " +str(pr)+" SO CHANGE " +str(chang)+" AND OVERALL CHANGE " +str(overall1)+" FOR PAIR " +data['pair']
+                response = requests.get(send_text)
+                print("ok")
+            except Exception as e:
+                print(type(e).__name__, str(e))
+                
+         if side=="SHORT":
+            try:
+                ap=client.futures_create_order(symbol=pair, side='SELL',positionSide="BOTH",type='MARKET',quantity=qt,reduceOnly='false')
+                print(ap)
+                result = client.futures_get_order(symbol=pair,orderId=ap['orderId'])
+                pr=float(pr)
+                avgp=float(result['avgPrice'])
+                print(pr)
+                print(avgp)
+                chang=avgp - pr
+                print(overall1)
+                overall1=overall1 + chang
+                print(chang)
+                print(overall1)
+                send_text = 'https://api.telegram.org/bot5064252177:AAGlwwtDi4B7TiwB4LTDyPvtYNeGIKJDlHk/sendMessage?chat_id=998041732&parse_mode=Markdown&text=EXECUTED WITH SIDE ' +result['side'] +" WITH QUANTITY " +result['executedQty']+" WITH PRICE " +result['avgPrice']+" BUT ACTUAL PRICE " +str(pr)+" SO CHANGE " +str(chang)+" AND OVERALL CHANGE " +str(overall1)+" FOR PAIR " +data['pair']
+                response = requests.get(send_text)
+                print("ok")
+            except Exception as e:
+                print(type(e).__name__, str(e))  
+
+        
+         return jsonify( {
+         "code": "error",
+         "message": "good work"
+        
+        
+         
+        
+          })     
+    
+
+@app.route('/webhookcust', methods=['POST'])
+def webhook():
+     
+
+     data = json.loads(request.data)
+
+     if data['passphrase'] == "ramp":
+           return jsonify( {
+            "code": "error",
+            "message": "good ramp"
+           }) 
+          
+
+
+     elif data['passphrase']=="newcode":
+         side = data['side']
+         pr = data['price']
+         pair=data['pair']
+         qt=data['qt'] 
+         qt=int(qt)
+         global overall2
+
+          
+
+
+         if side=="LONG":
+            try:
+                ap=client.futures_create_order(symbol=pair, side='BUY',positionSide="BOTH",type='MARKET',quantity=qt,reduceOnly='false')
+                print(ap)
+                result = client.futures_get_order(symbol=pair,orderId=ap['orderId'])
+                
+                pr=float(pr)
+                avgp=float(result['avgPrice'])
+                print(pr)
+                print(avgp)
+                chang=pr - avgp
+                overall2=overall2 + chang
+                print(chang)
+                print(overall2)
+                send_text = 'https://api.telegram.org/bot5064252177:AAGlwwtDi4B7TiwB4LTDyPvtYNeGIKJDlHk/sendMessage?chat_id=998041732&parse_mode=Markdown&text=EXECUTED WITH SIDE ' +result['side'] +" WITH QUANTITY " +result['executedQty']+" WITH PRICE " +result['avgPrice']+" BUT ACTUAL PRICE " +str(pr)+" SO CHANGE " +str(chang)+" AND OVERALL CHANGE " +str(overall2)+" FOR PAIR " +data['pair']
+                response = requests.get(send_text)
+                print("ok")
+            except Exception as e:
+                print(type(e).__name__, str(e))
+                
+         if side=="SHORT":
+            try:
+                ap=client.futures_create_order(symbol=pair, side='SELL',positionSide="BOTH",type='MARKET',quantity=qt,reduceOnly='false')
+                print(ap)
+                result = client.futures_get_order(symbol=pair,orderId=ap['orderId'])
+                pr=float(pr)
+                avgp=float(result['avgPrice'])
+                print(pr)
+                print(avgp)
+                chang=avgp - pr
+                print(overall2)
+                overall2=overall2 + chang
+                print(chang)
+                print(overall2)
+                send_text = 'https://api.telegram.org/bot5064252177:AAGlwwtDi4B7TiwB4LTDyPvtYNeGIKJDlHk/sendMessage?chat_id=998041732&parse_mode=Markdown&text=EXECUTED WITH SIDE ' +result['side'] +" WITH QUANTITY " +result['executedQty']+" WITH PRICE " +result['avgPrice']+" BUT ACTUAL PRICE " +str(pr)+" SO CHANGE " +str(chang)+" AND OVERALL CHANGE " +str(overall2)+" FOR PAIR " +data['pair']
+                response = requests.get(send_text)
+                print("ok")
+            except Exception as e:
+                print(type(e).__name__, str(e))  
+
+
+        
+         return jsonify( {
+         "code": "error",
+         "message": "good work"
+        
+        
+         
+        
+          })  
 
 
 if __name__ == '__main__':
